@@ -2,9 +2,6 @@
 ## Aflatoxin Universal Risk Assessment
 
 *Predictive Public Health System for Agriculture*
-
-[![Hackathon](https://img.shields.io/badge/Hackathon-Vodafone-red.svg)](https://vodafone.com)
-[![Institution](https://img.shields.io/badge/Institution-PES%20University-blue.svg)](https://pes.edu)
 [![Status](https://img.shields.io/badge/Status-In%20Development-orange.svg)]()
 
 ---
@@ -79,8 +76,8 @@ Aflatoxins are potent carcinogens produced by fungus that grows on staple crops 
 ### Installation
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/project-aura.git
-cd project-aura
+git clone https://github.com/stealthwhizz/aura.git
+cd aura
 
 # Install dependencies
 npm install
@@ -175,10 +172,10 @@ We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING
 
 ## 🏆 Team
 
-**Project Team**: @URA F@RMR8  
+**Project Team**: AURA FARMER8
 **Institution**: PES University  
 **Competition**: Vodafone Hackathon  
-**Date**: August 23, 2025
+**Date**: August 24, 2025
 
 ---
 
@@ -193,9 +190,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 If you found this project helpful, please ⭐ star the repository!
 
 For questions and support:
-- 📧 Email: [your-email@example.com]
-- 🐛 Issues: [GitHub Issues](https://github.com/your-username/project-aura/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/your-username/project-aura/discussions)
+- 📧 Email: [ash56pokemon@gmail.com]
 
 ---
 
