@@ -1,0 +1,25 @@
+# Core ML libraries
+tensorflow==2.15.0
+torch==2.1.0
+numpy==1.24.3
+pandas==2.1.3
+scikit-learn==1.3.2
+
+# Data processing
+sentinelsat==1.2.1
+rasterio==1.3.9
+geopandas==0.14.1
+
+# API and web
+requests==2.31.0
+flask==3.0.0
+flask-cors==4.0.0
+
+# Visualization
+matplotlib==3.8.2
+seaborn==0.13.0
+
+# Utilities
+python-dotenv==1.0.0
+pyyaml==6.0.1
+joblib==1.3.2
