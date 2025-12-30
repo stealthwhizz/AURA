@@ -10,9 +10,9 @@ function Register({ onRegister }) {
     phone: '',
     password: '',
     confirmPassword: '',
-    latitude: '',
-    longitude: '',
-    address: '',
+    latitude: '15.3173',
+    longitude: '75.7139',
+    address: 'Test Village, Karnataka',
     cropType: 'maize'
   });
   const [error, setError] = useState('');
@@ -35,6 +35,14 @@ function Register({ onRegister }) {
       return;
     }
 
+    const lat = parseFloat(formData.latitude);
+    const lng = parseFloat(formData.longitude);
+    
+    if (isNaN(lat) || isNaN(lng)) {
+      setError('Please enter valid latitude and longitude coordinates');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -44,12 +52,13 @@ function Register({ onRegister }) {
         phone: formData.phone,
         password: formData.password,
         location: {
-          latitude: parseFloat(formData.latitude),
-          longitude: parseFloat(formData.longitude),
+          latitude: lat,
+          longitude: lng,
           address: formData.address
         },
         crops: [{
           type: formData.cropType,
+          area: 5,
           storageType: 'bag'
         }]
       });
@@ -124,6 +133,7 @@ function Register({ onRegister }) {
                 required
                 placeholder="15.3173"
               />
+              <small className="form-hint">Pre-filled with test coordinates</small>
             </div>
             
             <div className="form-group">
@@ -137,6 +147,7 @@ function Register({ onRegister }) {
                 required
                 placeholder="75.7139"
               />
+              <small className="form-hint">Pre-filled with test coordinates</small>
             </div>
           </div>
           
