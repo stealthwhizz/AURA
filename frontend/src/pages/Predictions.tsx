@@ -6,10 +6,10 @@ import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
 import { api, Prediction, PredictionResponse } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  MapPin, 
-  Droplets, 
-  Warehouse, 
+import {
+  MapPin,
+  Droplets,
+  Warehouse,
   ThermometerSun,
   Loader2,
   CheckCircle,
@@ -55,60 +55,57 @@ export default function Predictions() {
       const data = await api.getPredictionHistory(farmer._id, 20);
       setHistory(data);
     } catch (error) {
-      // Mock data for demo
-      setHistory([
-        {
-          _id: '1',
-          farmer: farmer._id,
-          location: { latitude: -1.2921, longitude: 36.8219 },
-          riskScore: 32,
-          riskLevel: 'moderate',
-          confidence: 85,
-          recommendations: ['Improve ventilation', 'Monitor moisture'],
-          storageType: 'Silo',
-          storageQuality: 'Good',
-          moistureContent: 14.5,
-          createdAt: new Date(Date.now() - 86400000).toISOString(),
-        },
-        {
-          _id: '2',
-          farmer: farmer._id,
-          location: { latitude: -1.2921, longitude: 36.8219 },
-          riskScore: 18,
-          riskLevel: 'low',
-          confidence: 92,
-          recommendations: ['Maintain current practices'],
-          storageType: 'Warehouse',
-          storageQuality: 'Excellent',
-          moistureContent: 12.0,
-          createdAt: new Date(Date.now() - 172800000).toISOString(),
-        },
-      ]);
+      console.error('Failed to fetch prediction history:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load prediction history. Please try again.',
+        variant: 'destructive',
+      });
+      setHistory([]);
     } finally {
       setHistoryLoading(false);
     }
   };
 
   const handleGetLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLatitude(position.coords.latitude.toFixed(6));
-          setLongitude(position.coords.longitude.toFixed(6));
-          toast({
-            title: 'Location detected 📍',
-            description: 'Your coordinates have been filled in.',
-          });
-        },
-        () => {
-          toast({
-            title: 'Location access denied',
-            description: 'Please enter coordinates manually.',
-            variant: 'destructive',
-          });
-        }
-      );
+    if (!navigator.geolocation) {
+      toast({
+        title: 'Not Supported',
+        description: 'Geolocation is not supported by this browser.',
+        variant: 'destructive',
+      });
+      return;
     }
+
+    toast({
+      title: 'Locating...',
+      description: 'Requesting your position. Please allow access.',
+    });
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLatitude(position.coords.latitude.toFixed(6));
+        setLongitude(position.coords.longitude.toFixed(6));
+        toast({
+          title: 'Location detected 📍',
+          description: 'Your coordinates have been filled in.',
+        });
+      },
+      (error) => {
+        let errorMessage = 'Please enter coordinates manually.';
+        if (error.code === 1) errorMessage = 'Permission denied. Please allow location access in your browser address bar.';
+        else if (error.code === 2) errorMessage = 'Position unavailable. Check your GPS or network.';
+        else if (error.code === 3) errorMessage = 'Location request timed out.';
+
+        console.error('Geolocation error:', error);
+        toast({
+          title: 'Location access failed',
+          description: errorMessage,
+          variant: 'destructive',
+        });
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -131,39 +128,11 @@ export default function Predictions() {
         description: `Risk level: ${response.prediction.riskLevel.toUpperCase()}`,
       });
     } catch (error) {
-      // Mock result for demo
-      const mockResult: PredictionResponse = {
-        prediction: {
-          _id: 'new-' + Date.now(),
-          farmer: farmer._id,
-          location: { latitude: parseFloat(latitude), longitude: parseFloat(longitude) },
-          riskScore: Math.random() * 100,
-          riskLevel: ['low', 'moderate', 'high', 'critical'][Math.floor(Math.random() * 4)] as any,
-          confidence: 75 + Math.random() * 20,
-          recommendations: [
-            'Ensure proper ventilation in storage area',
-            'Monitor humidity levels daily',
-            'Consider using moisture absorbers',
-          ],
-          storageType,
-          storageQuality,
-          moistureContent: parseFloat(moistureContent),
-          createdAt: new Date().toISOString(),
-        },
-        recommendations: [
-          'Ensure proper ventilation in storage area',
-          'Monitor humidity levels daily',
-          'Consider using moisture absorbers',
-        ],
-        forecast: {
-          nextWeek: Math.random() * 100,
-          trend: ['improving', 'stable', 'worsening'][Math.floor(Math.random() * 3)] as any,
-        },
-      };
-      setResult(mockResult);
+      console.error('Failed to create prediction:', error);
       toast({
-        title: 'Prediction complete! ✅',
-        description: `Risk level: ${mockResult.prediction.riskLevel.toUpperCase()}`,
+        title: 'Error',
+        description: 'Failed to get prediction. Please try again.',
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -217,7 +186,7 @@ export default function Predictions() {
             {/* Prediction Form */}
             <div className="card-elevated p-6 animate-slide-up">
               <h2 className="font-bold text-lg text-foreground mb-4">Request Prediction</h2>
-              
+
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Location */}
                 <div className="space-y-2">
@@ -333,13 +302,13 @@ export default function Predictions() {
             {/* Result Display */}
             <div className="card-elevated p-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
               <h2 className="font-bold text-lg text-foreground mb-4">Prediction Result</h2>
-              
+
               {result ? (
                 <div className="space-y-6">
                   {/* Risk Score */}
                   <div className="text-center py-6">
-                    <RiskBadge 
-                      level={result.prediction.riskLevel} 
+                    <RiskBadge
+                      level={result.prediction.riskLevel}
                       score={result.prediction.riskScore}
                       size="lg"
                     />
@@ -357,7 +326,7 @@ export default function Predictions() {
                       <span className="font-medium text-foreground">7-Day Forecast</span>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Risk trend is <strong>{result.forecast.trend}</strong>. 
+                      Risk trend is <strong>{result.forecast.trend}</strong>.
                       Expected risk next week: {result.forecast.nextWeek.toFixed(1)}%
                     </p>
                   </div>
@@ -370,8 +339,8 @@ export default function Predictions() {
                     </div>
                     <ul className="space-y-2">
                       {result.recommendations.map((rec, i) => (
-                        <li 
-                          key={i} 
+                        <li
+                          key={i}
                           className="flex items-start gap-2 text-sm text-muted-foreground p-3 rounded-lg bg-secondary/30"
                         >
                           <span className="text-primary font-bold">{i + 1}.</span>

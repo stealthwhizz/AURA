@@ -168,6 +168,7 @@ export interface Farmer {
   };
   createdAt: string;
   walletAddress?: string;
+  role?: 'farmer' | 'admin' | 'certifier';
 }
 
 export interface Prediction {

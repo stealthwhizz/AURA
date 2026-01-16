@@ -12,6 +12,8 @@ import Predictions from "./pages/Predictions";
 import Alerts from "./pages/Alerts";
 import Certifications from "./pages/Certifications";
 import Profile from "./pages/Profile";
+import AdminManagement from "./pages/AdminManagement";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -63,6 +65,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <AdminManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <Admin />
                 </ProtectedRoute>
               }
             />

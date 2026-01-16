@@ -12,6 +12,11 @@ const FarmerSchema = new mongoose.Schema({
         unique: true,
         lowercase: true
     },
+    role: {
+        type: String,
+        enum: ['farmer', 'admin', 'certifier'],
+        default: 'farmer'
+    },
     phone: {
         type: String,
         required: true

@@ -13,18 +13,18 @@ const PredictionSchema = new mongoose.Schema({
     riskScore: {
         type: Number,
         required: true,
-        min: 1,
-        max: 10
+        min: 0,
+        max: 100
     },
     riskLevel: {
         type: String,
-        enum: ['LOW', 'MODERATE', 'HIGH', 'CRITICAL'],
+        enum: ['low', 'moderate', 'high', 'critical'],
         required: true
     },
     confidence: {
         type: Number,
         min: 0,
-        max: 1
+        max: 100
     },
     factors: {
         temperatureRisk: Number,
@@ -49,6 +49,15 @@ const PredictionSchema = new mongoose.Schema({
         ventilationScore: Number,
         moistureContent: Number
     },
+    storageType: {
+        type: String
+    },
+    storageQuality: {
+        type: String
+    },
+    moistureContent: {
+        type: Number
+    },
     recommendations: [{
         priority: String,
         action: String
@@ -57,9 +66,13 @@ const PredictionSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
     validUntil: {
         type: Date,
-        default: () => new Date(+new Date() + 72*60*60*1000) // 72 hours
+        default: () => new Date(+new Date() + 72 * 60 * 60 * 1000) // 72 hours
     }
 });
 

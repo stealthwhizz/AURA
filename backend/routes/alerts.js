@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Alert = require('../models/Alert');
+const { mapAlertToFrontend, mapAlertStatsToFrontend } = require('../utils/mappers');
 
 // Get alerts for farmer
 router.get('/:farmerId', async (req, res) => {
@@ -18,7 +19,7 @@ router.get('/:farmerId', async (req, res) => {
             .populate('prediction')
             .limit(50);
 
-        res.json(alerts);
+        res.json(alerts.map(mapAlertToFrontend));
 
     } catch (error) {
         console.error('Alerts fetch error:', error);
@@ -41,7 +42,7 @@ router.put('/:alertId/read', async (req, res) => {
             return res.status(404).json({ error: 'Alert not found' });
         }
 
-        res.json(alert);
+        res.json(mapAlertToFrontend(alert));
 
     } catch (error) {
         console.error('Mark read error:', error);
@@ -64,7 +65,7 @@ router.put('/:alertId/acknowledge', async (req, res) => {
             return res.status(404).json({ error: 'Alert not found' });
         }
 
-        res.json(alert);
+        res.json(mapAlertToFrontend(alert));
 
     } catch (error) {
         console.error('Acknowledge error:', error);
@@ -77,18 +78,8 @@ router.get('/:farmerId/stats', async (req, res) => {
     try {
         const { farmerId } = req.params;
 
-        const stats = await Alert.aggregate([
-            { $match: { farmer: mongoose.Types.ObjectId(farmerId) } },
-            {
-                $group: {
-                    _id: '$severity',
-                    count: { $sum: 1 },
-                    unread: {
-                        $sum: { $cond: [{ $eq: ['$read', false] }, 1, 0] }
-                    }
-                }
-            }
-        ]);
+        const alerts = await Alert.find({ farmer: farmerId });
+        const stats = mapAlertStatsToFrontend(alerts);
 
         res.json(stats);
 

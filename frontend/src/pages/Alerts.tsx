@@ -4,11 +4,11 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { api, Alert, AlertStats } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  Bell, 
-  BellOff, 
-  Check, 
-  CheckCheck, 
+import {
+  Bell,
+  BellOff,
+  Check,
+  CheckCheck,
   Filter,
   Loader2,
   AlertTriangle,
@@ -41,51 +41,14 @@ export default function Alerts() {
       setAlerts(alertsData);
       setStats(statsData);
     } catch (error) {
-      // Mock data for demo
-      const mockAlerts: Alert[] = [
-        {
-          _id: '1',
-          farmer: farmer._id,
-          prediction: 'pred-1',
-          type: 'risk_warning' as const,
-          severity: 'high' as const,
-          title: 'High Risk Detected in Storage Unit A',
-          message: 'Your latest prediction shows high aflatoxin risk. Immediate action recommended: improve ventilation and reduce moisture levels.',
-          isRead: false,
-          isAcknowledged: false,
-          createdAt: new Date(Date.now() - 3600000).toISOString(),
-        },
-        {
-          _id: '2',
-          farmer: farmer._id,
-          prediction: 'pred-2',
-          type: 'action_required' as const,
-          severity: 'medium' as const,
-          title: 'Moisture Level Above Threshold',
-          message: 'Storage moisture content is at 16.5%, above the recommended 14% threshold. Consider using desiccants.',
-          isRead: false,
-          isAcknowledged: false,
-          createdAt: new Date(Date.now() - 7200000).toISOString(),
-        },
-        {
-          _id: '3',
-          farmer: farmer._id,
-          prediction: 'pred-3',
-          type: 'info' as const,
-          severity: 'low' as const,
-          title: 'Weekly Report Available',
-          message: 'Your weekly aflatoxin risk summary is ready. All metrics are within safe ranges.',
-          isRead: true,
-          isAcknowledged: true,
-          createdAt: new Date(Date.now() - 86400000).toISOString(),
-        },
-      ];
-      setAlerts(mockAlerts.filter(a => filter === 'all' || !a.isRead));
-      setStats({
-        total: 5,
-        unread: 2,
-        bySeverity: { low: 2, medium: 1, high: 1, critical: 1 },
+      console.error('Failed to fetch alerts:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load alerts. Please try again.',
+        variant: 'destructive',
       });
+      setAlerts([]);
+      setStats(null);
     } finally {
       setIsLoading(false);
     }
@@ -94,18 +57,19 @@ export default function Alerts() {
   const handleMarkRead = async (alertId: string) => {
     setUpdating(alertId);
     try {
-      await api.markAlertRead(alertId);
-      setAlerts(prev => prev.map(a => 
-        a._id === alertId ? { ...a, isRead: true } : a
+      const updatedAlert = await api.markAlertRead(alertId);
+      setAlerts(prev => prev.map(a =>
+        a._id === alertId ? updatedAlert : a
       ));
       setStats(prev => prev ? { ...prev, unread: Math.max(0, prev.unread - 1) } : prev);
       toast({ title: 'Marked as read' });
     } catch (error) {
-      // Mock update
-      setAlerts(prev => prev.map(a => 
-        a._id === alertId ? { ...a, isRead: true } : a
-      ));
-      toast({ title: 'Marked as read' });
+      console.error('Failed to mark as read:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to mark alert as read. Please try again.',
+        variant: 'destructive',
+      });
     } finally {
       setUpdating(null);
     }
@@ -114,17 +78,18 @@ export default function Alerts() {
   const handleAcknowledge = async (alertId: string) => {
     setUpdating(alertId);
     try {
-      await api.acknowledgeAlert(alertId);
-      setAlerts(prev => prev.map(a => 
-        a._id === alertId ? { ...a, isAcknowledged: true, isRead: true } : a
+      const updatedAlert = await api.acknowledgeAlert(alertId);
+      setAlerts(prev => prev.map(a =>
+        a._id === alertId ? updatedAlert : a
       ));
       toast({ title: 'Alert acknowledged ✅' });
     } catch (error) {
-      // Mock update
-      setAlerts(prev => prev.map(a => 
-        a._id === alertId ? { ...a, isAcknowledged: true, isRead: true } : a
-      ));
-      toast({ title: 'Alert acknowledged ✅' });
+      console.error('Failed to acknowledge:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to acknowledge alert. Please try again.',
+        variant: 'destructive',
+      });
     } finally {
       setUpdating(null);
     }
@@ -193,7 +158,7 @@ export default function Alerts() {
             alerts.map((alert) => {
               const config = severityConfig[alert.severity];
               const Icon = config.icon;
-              
+
               return (
                 <div
                   key={alert._id}
@@ -208,7 +173,7 @@ export default function Alerts() {
                       <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center shrink-0', config.bg)}>
                         <span className="text-xl">{config.emoji}</span>
                       </div>
-                      
+
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
                           <div>
@@ -222,7 +187,7 @@ export default function Alerts() {
                               {alert.message}
                             </p>
                           </div>
-                          
+
                           {!alert.isRead && (
                             <span className="w-2 h-2 rounded-full bg-primary shrink-0 mt-2" />
                           )}
@@ -232,7 +197,7 @@ export default function Alerts() {
                           <span className="text-xs text-muted-foreground">
                             {new Date(alert.createdAt).toLocaleString()}
                           </span>
-                          
+
                           <div className="flex items-center gap-2">
                             {!alert.isRead && (
                               <Button
@@ -251,7 +216,7 @@ export default function Alerts() {
                                 )}
                               </Button>
                             )}
-                            
+
                             {!alert.isAcknowledged && (
                               <Button
                                 variant="outline"
@@ -269,7 +234,7 @@ export default function Alerts() {
                                 )}
                               </Button>
                             )}
-                            
+
                             {alert.isAcknowledged && (
                               <span className="text-xs text-success flex items-center gap-1">
                                 <CheckCheck className="w-3 h-3" />

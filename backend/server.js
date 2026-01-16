@@ -8,7 +8,11 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors());
+// Middleware
+app.use(cors({
+    origin: '*', // Allow all origins for dev simplicity (fixes 8080/5173 mismatch)
+    credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

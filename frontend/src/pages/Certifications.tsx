@@ -5,11 +5,11 @@ import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
 import { api, Certification, CertificationResponse } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  Shield, 
-  QrCode, 
-  Search, 
-  Copy, 
+import {
+  Shield,
+  QrCode,
+  Search,
+  Copy,
   ExternalLink,
   Loader2,
   CheckCircle,
@@ -52,33 +52,13 @@ export default function Certifications() {
       const data = await api.getFarmerCertifications(farmer._id);
       setCertifications(data);
     } catch (error) {
-      // Mock data
-      setCertifications([
-        {
-          _id: '1',
-          batchId: 'AURA-2024-001234',
-          farmer: farmer._id,
-          cropType: 'Maize',
-          quantity: 500,
-          harvestDate: '2024-01-15',
-          averageRiskScore: 12,
-          status: 'valid',
-          verificationUrl: 'https://aura.app/verify/AURA-2024-001234',
-          blockchainTxHash: '0x1234...5678',
-          createdAt: new Date(Date.now() - 604800000).toISOString(),
-        },
-        {
-          _id: '2',
-          batchId: 'AURA-2024-001235',
-          farmer: farmer._id,
-          cropType: 'Groundnuts',
-          quantity: 200,
-          averageRiskScore: 8,
-          status: 'valid',
-          verificationUrl: 'https://aura.app/verify/AURA-2024-001235',
-          createdAt: new Date(Date.now() - 1209600000).toISOString(),
-        },
-      ]);
+      console.error('Failed to fetch certifications:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load certifications. Please try again.',
+        variant: 'destructive',
+      });
+      setCertifications([]);
     } finally {
       setIsLoading(false);
     }
@@ -104,26 +84,11 @@ export default function Certifications() {
         description: `Batch ID: ${response.certification.batchId}`,
       });
     } catch (error) {
-      // Mock response
-      const mockResponse: CertificationResponse = {
-        certification: {
-          _id: 'new-' + Date.now(),
-          batchId: `AURA-2024-${Math.random().toString().slice(2, 8)}`,
-          farmer: farmer._id,
-          cropType,
-          quantity: parseInt(quantity),
-          harvestDate,
-          averageRiskScore: 15,
-          status: 'valid',
-          verificationUrl: `https://aura.app/verify/AURA-2024-${Math.random().toString().slice(2, 8)}`,
-          createdAt: new Date().toISOString(),
-        },
-        qrCode: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAMAAABrrFhUAAAAMFBMVEX///8AAADf39+/v7+fn5+vr6/v7++Pj49vb29/f3/Pz89fX18vLy9PT08fHx8/Pz+YZqfqAAAEKElEQVR4nO2d23qDIAyAQar1sP3/3+7abW2tgBwSQjL/urvdjJn5SwJorc5xHMdxHMdxHMdxHMdxHMdxnP+LTt0A7aQHqwzqdMO0kYYsKGg6C0ldSBuhtQZ1E9tJW5bUhbQRWmtQN7GddF5J3YR20hON1I1oJ00XKXUT2knPNFI3op30TKN4K9RtSJOeaSBvi7oRqdJzjZL7KXUzUqXnGilTXeoWpEpBgTJuaVWWNOTBwNJKSdSNSJGCAmXcUlYpidFKStRtSJGCApUFqtuQIk0aZdpSVkUaDaIpq6IWMK1U2gqRlZJIWyHSKtAWiLRSaStEVinapqDMKj0w/0XLQqStEGE11CnQWolYCxQpFa9OAdIq0FaIrJRo1CkoBVoF2gqRVoGwAaJtgOhaEKlO0eoUaK1EWgXCCoi2FiJqhUilQGslYq0F0VaIqBRoqhPUGgXadQVaBZpqIHIViGstkZWCVq2E1gqE1RJpFYi0AbS1IFopobVEYi2ItArEWYDIWiGyVoi1QqRVoK0GslKgqZaIWiGyUiCuFohaCyJVorFW0E5YobFaorFaEFlLBKelYu0C8bUkshYIToHGWolYC0LWEom1QNRa0E44IWsliKwlkpWCdtoKEZYSjbVC1Foimu50klKisZbIViKsAuFvRV0g3OoUaRWIbg9EWAuirQXRaSCyWhBZS4RXAFEpkFYBWC0JWgERaiFYKwnVgoirBeFaIq4GIqulg2tB1BaItBYEnQJttSToxChUCxKnJaJaEtE2EHUtibIWRKaBKGtB1AKR1YKo9oBgLYk8LUlXS0evBVHWAlEtSF5aEq4GIq4FUdaSyGpBxLQgUS0drxaEi0FktSS6WhCxFkRXSyLXkshqSTSJSS60JJoKiK4FqVspMXYKdOoKxLYH4mmB4CnQmEu09kCkWpI6raCxWhJbCxJVC6IW0Fi1IJ5OqNqSZLsgeosS14LUtSS+NhDZksS1JIYSJK8l8XwP0teDaGpB9LUk9loSfWuJ+S4kiVsH8dWSqFsQfS2JuQVBb0HstSTyFsReCyKfCMRaAfjfBZbEXgvCqSWx1oKoa0k8WxC4GkS0JNrXD+xvQdS1JPI9iLqWRL8M4e9BPC0IfQzGXAt6+u9BvLUknlIScy3p2QVS14LEpwPEt5vI1oGo/4mEvhbE/TLM/zLMHgxE/zKMuxYErkHoO5TI14PoawGIb0ls/0TCs5fG14J4Jyzx/xMJcy2I+l9I2GtJnC2I/5/4mWtJrC2I9l9oqGtB3C2IvBbE+S802GtB3HuQ2ZZYa0GMfyPibkHsf0VC/0cCPC2ItZbk8HcC7D9Ig9+CuGtBnK8fcNeS+P5FhLmWxF1L4mpBfH8kw11L4qklcf2RhL8WxP5HQsz/RMJdy/+7IOcf4g+cYR9LfQAAAABJRU5ErkJggg==',
-      };
-      setNewCert(mockResponse);
+      console.error('Failed to create certification:', error);
       toast({
-        title: 'Certification created! 🎉',
-        description: `Batch ID: ${mockResponse.certification.batchId}`,
+        title: 'Error',
+        description: 'Failed to create certification. Please try again.',
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -138,27 +103,17 @@ export default function Certifications() {
     try {
       const result = await api.verifyCertification(verifyBatchId);
       setVerifyResult(result);
+      toast({
+        title: 'Verification successful ✓',
+        description: `Certificate is ${result.status === 'valid' ? 'valid' : 'revoked'}`,
+      });
     } catch (error) {
-      // Mock verify
-      if (verifyBatchId.startsWith('AURA-')) {
-        setVerifyResult({
-          _id: 'verified',
-          batchId: verifyBatchId,
-          farmer: 'farmer-123',
-          cropType: 'Maize',
-          quantity: 500,
-          averageRiskScore: 12,
-          status: 'valid',
-          verificationUrl: `https://aura.app/verify/${verifyBatchId}`,
-          createdAt: new Date().toISOString(),
-        });
-      } else {
-        toast({
-          title: 'Not Found',
-          description: 'No certification found with this batch ID.',
-          variant: 'destructive',
-        });
-      }
+      console.error('Verification failed:', error);
+      toast({
+        title: 'Not Found',
+        description: 'No certification found with this batch ID.',
+        variant: 'destructive',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -209,7 +164,7 @@ export default function Certifications() {
           <div className="grid lg:grid-cols-2 gap-6">
             <div className="card-elevated p-6 animate-slide-up">
               <h2 className="font-bold text-lg text-foreground mb-4">Create Certification</h2>
-              
+
               <form onSubmit={handleCreate} className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-foreground">Crop Type</label>
@@ -280,15 +235,15 @@ export default function Certifications() {
             {/* Result */}
             <div className="card-elevated p-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
               <h2 className="font-bold text-lg text-foreground mb-4">Certification Result</h2>
-              
+
               {newCert ? (
                 <div className="space-y-6">
                   {/* QR Code */}
                   <div className="text-center">
                     <div className="inline-block p-4 bg-card rounded-xl border-2 border-border">
-                      <img 
-                        src={newCert.qrCode} 
-                        alt="Certification QR Code" 
+                      <img
+                        src={newCert.qrCode}
+                        alt="Certification QR Code"
                         className="w-48 h-48 mx-auto"
                       />
                     </div>
@@ -299,8 +254,8 @@ export default function Certifications() {
 
                   {/* Details */}
                   <div className="space-y-3">
-                    <DetailRow 
-                      label="Batch ID" 
+                    <DetailRow
+                      label="Batch ID"
                       value={newCert.certification.batchId}
                       copyable
                       onCopy={() => copyToClipboard(newCert.certification.batchId)}
@@ -308,14 +263,14 @@ export default function Certifications() {
                     <DetailRow label="Crop Type" value={newCert.certification.cropType} />
                     <DetailRow label="Quantity" value={`${newCert.certification.quantity} kg`} />
                     <DetailRow label="Risk Score" value={`${newCert.certification.averageRiskScore}%`} />
-                    <DetailRow 
-                      label="Status" 
+                    <DetailRow
+                      label="Status"
                       value={
                         <span className="flex items-center gap-1 text-success">
                           <CheckCircle className="w-4 h-4" />
                           Valid
                         </span>
-                      } 
+                      }
                     />
                   </div>
 
@@ -359,8 +314,8 @@ export default function Certifications() {
               </div>
             ) : certifications.length > 0 ? (
               certifications.map((cert) => (
-                <CertificationCard 
-                  key={cert._id} 
+                <CertificationCard
+                  key={cert._id}
                   certification={cert}
                   onCopy={copyToClipboard}
                 />
@@ -437,9 +392,9 @@ export default function Certifications() {
                     <DetailRow label="Crop Type" value={verifyResult.cropType} />
                     <DetailRow label="Quantity" value={`${verifyResult.quantity} kg`} />
                     <DetailRow label="Risk Score" value={`${verifyResult.averageRiskScore}%`} />
-                    <DetailRow 
-                      label="Created" 
-                      value={new Date(verifyResult.createdAt).toLocaleDateString()} 
+                    <DetailRow
+                      label="Created"
+                      value={new Date(verifyResult.createdAt).toLocaleDateString()}
                     />
                   </div>
                 </div>
@@ -452,13 +407,13 @@ export default function Certifications() {
   );
 }
 
-function DetailRow({ 
-  label, 
-  value, 
-  copyable, 
-  onCopy 
-}: { 
-  label: string; 
+function DetailRow({
+  label,
+  value,
+  copyable,
+  onCopy
+}: {
+  label: string;
   value: React.ReactNode;
   copyable?: boolean;
   onCopy?: () => void;
@@ -478,10 +433,10 @@ function DetailRow({
   );
 }
 
-function CertificationCard({ 
-  certification, 
-  onCopy 
-}: { 
+function CertificationCard({
+  certification,
+  onCopy
+}: {
   certification: Certification;
   onCopy: (text: string) => void;
 }) {
@@ -491,7 +446,7 @@ function CertificationCard({
         <div className="w-12 h-12 rounded-xl bg-success/10 flex items-center justify-center shrink-0">
           <Shield className="w-6 h-6 text-success" />
         </div>
-        
+
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div>
@@ -500,10 +455,10 @@ function CertificationCard({
                 {certification.quantity} kg • Risk: {certification.averageRiskScore}%
               </p>
             </div>
-            
+
             <span className={cn(
               'flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full',
-              certification.status === 'valid' 
+              certification.status === 'valid'
                 ? 'bg-success/10 text-success'
                 : 'bg-destructive/10 text-destructive'
             )}>
@@ -543,22 +498,24 @@ function CertificationCard({
               <Link2 className="w-3 h-3" />
               Copy URL
             </Button>
-            {certification.blockchainTxHash && (
-              <Button
-                variant="ghost"
-                size="sm"
-                asChild
-              >
-                <a 
-                  href={`https://etherscan.io/tx/${certification.blockchainTxHash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+            {certification.blockchainTxHash &&
+              certification.blockchainTxHash !== 'null' &&
+              !certification.blockchainTxHash.includes('FAILED') && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  asChild
                 >
-                  <ExternalLink className="w-3 h-3" />
-                  View on Chain
-                </a>
-              </Button>
-            )}
+                  <a
+                    href={`https://sepolia.etherscan.io/tx/${certification.blockchainTxHash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <ExternalLink className="w-3 h-3" />
+                    View on Sepolia
+                  </a>
+                </Button>
+              )}
           </div>
         </div>
       </div>
