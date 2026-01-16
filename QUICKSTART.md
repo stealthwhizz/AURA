@@ -67,6 +67,102 @@ npm run dev
 
 ✅ Frontend running on http://localhost:5173
 
+---
+
+## 🚀 How to Run This Project
+
+### Option 1: One-Click Startup (Recommended) ⚡
+
+**Run everything at once with a single command:**
+
+```powershell
+.\start_all.bat
+```
+
+This script will:
+1. Start the blockchain node (Hardhat local network)
+2. Deploy smart contracts automatically
+3. Launch the backend server
+4. Start the ML prediction engine
+5. Open the frontend dashboard
+6. Automatically open your browser to http://localhost:5173
+
+**✅ All services will run in separate windows - don't close them!**
+
+---
+
+### Option 2: Step-by-Step Startup (For Development)
+
+**If you need to run components individually:**
+
+#### Step 1: Start Blockchain (Optional - only if using blockchain features)
+```powershell
+.\1_start_chain.bat
+```
+- Starts local Hardhat blockchain node
+- Keep this window open - closing it resets the network
+- Blockchain runs on http://localhost:8545
+
+#### Step 2: Deploy Contracts (Optional - only if using blockchain)
+```powershell
+.\2_deploy_contracts.bat
+```
+- Deploys AURA certification contracts
+- Run this AFTER the blockchain node is running
+- Only needs to be done once per blockchain session
+
+#### Step 3: Start All Application Services
+```powershell
+.\3_start_app.bat
+```
+- Starts backend (port 3000)
+- Starts ML API (port 5000)  
+- Starts frontend (port 5173)
+- Opens browser automatically
+
+---
+
+### Option 3: Manual Startup (Full Control)
+
+**Open 3 separate terminals and run:**
+
+**Terminal 1 - Backend:**
+```powershell
+cd backend
+npm run dev
+```
+
+**Terminal 2 - ML Model:**
+```powershell
+cd ml-model
+venv\Scripts\activate
+python app.py
+```
+
+**Terminal 3 - Frontend:**
+```powershell
+cd frontend
+npm run dev
+```
+
+Then open browser: http://localhost:5173
+
+---
+
+### 🛑 Stopping the System
+
+**Quick Stop:**
+```powershell
+.\kill_all.bat
+```
+Kills all Node.js and Python processes (stops all AURA services)
+
+**Manual Stop:**
+- Press `Ctrl+C` in each terminal window
+- Close the terminal windows
+
+---
+
 ### 4️⃣ Test the System (2 minutes)
 
 1. Open browser: **http://localhost:5173**
